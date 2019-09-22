@@ -1,0 +1,77 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        google()
+    }
+}
+
+plugins {
+    id "java"
+    id "groovy"
+    id "maven"
+    id "signing"
+    id "idea"
+    id "java-gradle-plugin"
+    id "com.gradle.plugin-publish" version "0.10.1"
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+    google()
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    compile "commons-io:commons-io:2.5"
+    testCompile "com.android.tools.build:gradle:3.4.0"
+    testCompile "org.scala-lang:scala-compiler:2.11.12"
+    testCompile "junit:junit:4.12"
+}
+
+group = "dev.kibet"
+version = "0.1-SNAPSHOT"
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+
+task groovydocJar(type: Jar, dependsOn: groovydoc) {
+    from groovydoc.destinationDir
+    classifier = "javadoc"
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = "sources"
+}
+
+pluginBundle {
+    website = 'https://github.com/kevin-kibet/gradle-android-scala-plugin'
+    vcsUrl = 'https://github.com/kevin-kibet/gradle-android-scala-plugin'
+    description "Gradle Android Scala Plugin adds scala language support to official gradle android plugin."
+    tags = ['gradle', 'android', 'plugin', 'scala']
+}
+
+gradlePlugin {
+    plugins {
+        androidScalaPlugin {
+            id = 'dev.kibet.android-scala'
+            displayName = 'Gradle Android Scala Plugin'
+            description = 'Gradle Android Scala Plugin'
+            implementationClass = 'dev.kibet.gradle.AndroidScalaPlugin'
+        }
+    }
+}
+
+artifacts {
+    archives jar
+    archives groovydocJar
+    archives sourceJar
+}
+
+task integTest(type: dev.kibet.gradle.AndroidScalaPluginIntegrationTestTask, dependsOn: "uploadArchives")
+task integrationTest(type: dev.kibet.gradle.AndroidScalaPluginIntegrationTestTask, dependsOn: "uploadArchives")
+task sample(type: dev.kibet.gradle.AndroidScalaPluginSampleTask)
